@@ -29,8 +29,8 @@ class ec2 {
 
     $ec2env  = [
         "JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64",
-        "EC2_PRIVATE_KEY=/etc/puppet/aws/keys/pk.pem",
-        "EC2_CERT=/etc/puppet/aws/keys/cert.pem",
+        "EC2_PRIVATE_KEY=/etc/puppet/files/keys/pk.pem",
+        "EC2_CERT=/etc/puppet/files/keys/cert.pem",
       ]
 
     define elasticip ($instanceid, $ip)
