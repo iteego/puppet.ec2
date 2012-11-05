@@ -40,8 +40,8 @@ class ec2 {
             onlyif      => "test $ip != $(curl -s -f http://169.254.169.254/latest/meta-data/public-ipv4)",
 
             logoutput   => on_failure,
-            environment => $ec2::ec2env,
-            path        => $ec2::ec2path,
+            environment => $ec2env,
+            path        => $ec2path,
             command     => "ec2assocaddr $ip -i $instanceid",
             require     => Package["ec2-api-tools"],
         }
@@ -54,8 +54,8 @@ class ec2 {
     {
         exec { "ec2-attach-volume-$name":
             logoutput   => on_failure,
-            environment => $ec2::ec2env,
-            path        => $ec2::ec2path,
+            environment => $ec2env,
+            path        => $ec2path,
             command     => "timeout --kill-after=10 20 ec2detvol $volumeid -f
                             sleep 20
                             timeout --kill-after=10 20 ec2attvol $volumeid \
