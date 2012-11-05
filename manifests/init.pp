@@ -21,27 +21,22 @@
 
 class ec2 {
 
-    # This must include the path to the Amazon EC2 tools
-    $ec2path = [
-        "/usr/bin", "/bin", "/usr/sbin", "/sbin",
-        "/etc/puppet/lib/ec2-api-tools/bin",
-      ]
-
-    $ec2env  = [
-        "JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64",
-        "EC2_PRIVATE_KEY=/etc/puppet/files/keys/pk.pem",
-        "EC2_CERT=/etc/puppet/files/keys/cert.pem",
-      ]
-
-    define elasticip ($instanceid, $ip)
+    define elasticip ($instanceid, $ip
+                      $ec2PrivateKeyFile = '/etc/puppet/files/keys/pk.pem',
+                      $ec2CertFile = '/etc/puppet/files/keys/cert.pem',
+                      )
     {
         exec { "ec2-associate-address-$name":
             # Only do this when necessary
             onlyif      => "test $ip != $(curl -s -f http://169.254.169.254/latest/meta-data/public-ipv4)",
 
             logoutput   => on_failure,
-            environment => $ec2env,
-            path        => $ec2path,
+            environment => [
+                             "JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64",
+                             "EC2_PRIVATE_KEY=$ec2PrivateKeyFile",
+                             "EC2_CERT=$ec2CertFile",
+                           ],
+            path        => [ "/usr/bin", "/bin", "/usr/sbin", "/sbin" ],
             command     => "ec2assocaddr $ip -i $instanceid",
             require     => Package["ec2-api-tools"],
         }
@@ -50,12 +45,19 @@ class ec2 {
     define ebsvolume ($instanceid, $volumeid, $ebsdevicetomount, $localdevicetomount,
                       $mountpoint = '/mnt', $owner = 'root', $group = 'root',
                       $mode = '755', $fstype = 'ext3',
-                      $mountoptions = 'defaults')
+                      $mountoptions = 'defaults',
+                      $ec2PrivateKeyFile = '/etc/puppet/files/keys/pk.pem',
+                      $ec2CertFile = '/etc/puppet/files/keys/cert.pem',
+                      )
     {
         exec { "ec2-attach-volume-$name":
             logoutput   => on_failure,
-            environment => $ec2env,
-            path        => $ec2path,
+            environment => [
+                             "JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64",
+                             "EC2_PRIVATE_KEY=$ec2PrivateKeyFile",
+                             "EC2_CERT=$ec2CertFile",
+                           ],
+            path        => [ "/usr/bin", "/bin", "/usr/sbin", "/sbin" ],
             command     => "timeout --kill-after=10 20 ec2detvol $volumeid -f
                             sleep 20
                             timeout --kill-after=10 20 ec2attvol $volumeid \
