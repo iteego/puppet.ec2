@@ -21,7 +21,7 @@
 
 class ec2 {
 
-    define elasticip ($instanceid, $ip
+    define elasticip ($instanceid, $ip,
                       $ec2PrivateKeyFile = '/etc/puppet/files/keys/pk.pem',
                       $ec2CertFile = '/etc/puppet/files/keys/cert.pem',
                       )
